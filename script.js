@@ -112,6 +112,12 @@ if (typingText) {
     }
 
     setTimeout(type, 1000);
+    
+    // Add blinking cursor
+    const cursorSpan = document.createElement('span');
+    cursorSpan.className = 'typing-cursor';
+    cursorSpan.textContent = '|';
+    typingText.appendChild(cursorSpan);
 }
 
 // ===== COUNTER ANIMATION =====
@@ -202,95 +208,6 @@ filterBtns.forEach(btn => {
     });
 });
 
-// ===== CONTACT FORM =====
-const contactForm = document.getElementById('contactForm');
-
-if (contactForm) {
-    contactForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        
-        const name = document.getElementById('name').value;
-        const email = document.getElementById('email').value;
-        const message = document.getElementById('message').value;
-        
-        console.log('Form submitted:', { name, email, message });
-        alert('Спасибо за сообщение! Я свяжусь с вами в ближайшее время.');
-        contactForm.reset();
-    });
-}
-
-// ===== SCROLL REVEAL ANIMATION =====
-const fadeElements = document.querySelectorAll('.skill-card, .project-card, .about-image, .about-text');
-
-fadeElements.forEach(el => {
-    el.classList.add('fade-in');
-});
-
-const revealObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-            revealObserver.unobserve(entry.target);
-        }
-    });
-}, {
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px'  // ✅ ИСПРАВЛЕНО: добавлены 'px'
-});
-
-fadeElements.forEach(el => {
-    revealObserver.observe(el);
-});
-
-// ===== SMOOTH SCROLL =====
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        
-        if (target) {
-            const offsetTop = target.offsetTop - 80;
-            window.scrollTo({
-                top: offsetTop,
-                behavior: 'smooth'
-            });
-        }
-    });
-});
-
-// ===== PARALLAX EFFECT =====
-window.addEventListener('scroll', () => {
-    const scrolled = window.pageYOffset;
-    const heroImage = document.querySelector('.hero-image');
-    
-    if (heroImage && window.innerWidth > 968) {
-        heroImage.style.transform = `translateY(${scrolled * 0.2}px)`;
-    }
-});
-
-// ===== FLOATING CARDS =====
-const heroImageWrapper = document.querySelector('.hero-image-wrapper');
-const floatingCards = document.querySelectorAll('.floating-card');
-
-if (heroImageWrapper) {
-    heroImageWrapper.addEventListener('mousemove', (e) => {
-        const rect = heroImageWrapper.getBoundingClientRect();
-        const x = (e.clientX - rect.left) / rect.width - 0.5;
-        const y = (e.clientY - rect.top) / rect.height - 0.5;
-        
-        floatingCards.forEach((card, index) => {
-            const speed = (index + 1) * 20;
-            card.style.transform = `translate(${x * speed}px, ${y * speed}px)`;
-        });
-    });
-    
-    heroImageWrapper.addEventListener('mouseleave', () => {
-        floatingCards.forEach(card => {
-            card.style.transform = 'translate(0, 0)';
-        });
-    });
-}
-
 // ===== MODAL WINDOW =====
 const modalOverlay = document.getElementById('modalOverlay');
 const modalClose = document.getElementById('modalClose');
@@ -307,20 +224,26 @@ if (contactForm) {
         const message = document.getElementById('message').value;
         
         // Show modal
-        modalOverlay.classList.add('active');
+        if (modalOverlay) {
+            modalOverlay.classList.add('active');
+        }
         
         // Generate Telegram message
         const telegramText = `Привет! Меня зовут ${name}.%0A%0AМой email: ${email}%0A%0AСообщение:%0A${message}`;
-        telegramLink.href = `https://t.me/Lufiuz?text=${telegramText}`;
+        if (telegramLink) {
+            telegramLink.href = `https://t.me/Lufiuz?text=${telegramText}`;
+        }
         
         // Generate Gmail message
         const gmailSubject = `Новое сообщение от ${name}`;
         const gmailBody = `Имя: ${name}%0D%0AEmail: ${email}%0D%0A%0D%0AСообщение:%0D%0A${message}`;
-        gmailLink.href = `https://mail.google.com/mail/?view=cm&fs=1&to=boombl4you@gmail.com&su=${encodeURIComponent(gmailSubject)}&body=${gmailBody}`;
+        if (gmailLink) {
+            gmailLink.href = `https://mail.google.com/mail/?view=cm&fs=1&to=boombl4you@gmail.com&su=${encodeURIComponent(gmailSubject)}&body=${gmailBody}`;
+        }
     });
 }
 
-if (modalClose) {
+if (modalClose && modalOverlay) {
     modalClose.addEventListener('click', () => {
         modalOverlay.classList.remove('active');
     });
@@ -356,11 +279,9 @@ if (cursor && cursorFollower && window.innerWidth > 640) {
     });
 
     function animateCursor() {
-        // Smooth follow for cursor
         cursorX += (mouseX - cursorX) * 0.2;
         cursorY += (mouseY - cursorY) * 0.2;
         
-        // Slower follow for follower
         followerX += (mouseX - followerX) * 0.1;
         followerY += (mouseY - followerY) * 0.1;
         
@@ -374,7 +295,6 @@ if (cursor && cursorFollower && window.innerWidth > 640) {
     
     animateCursor();
 
-    // Hover effect on interactive elements
     const interactiveElements = document.querySelectorAll('a, button, .project-card, .skill-card');
     
     interactiveElements.forEach(el => {
@@ -398,31 +318,25 @@ if (particlesContainer) {
         const particle = document.createElement('div');
         particle.className = 'particle';
         
-        // Random position and size
         particle.style.left = Math.random() * 100 + '%';
         particle.style.width = Math.random() * 6 + 2 + 'px';
         particle.style.height = particle.style.width;
         
-        // Random animation duration and delay
         particle.style.animationDuration = Math.random() * 10 + 10 + 's';
         particle.style.animationDelay = Math.random() * 5 + 's';
         
-        // Random color from gradient
         const colors = ['#6366f1', '#8b5cf6', '#ec4899'];
         particle.style.background = colors[Math.floor(Math.random() * colors.length)];
         
         particlesContainer.appendChild(particle);
         
-        // Remove particle after animation
         setTimeout(() => {
             particle.remove();
         }, 20000);
     }
 
-    // Create particles
     setInterval(createParticle, 500);
     
-    // Create initial particles
     for (let i = 0; i < 20; i++) {
         setTimeout(createParticle, i * 200);
     }
@@ -438,31 +352,6 @@ window.addEventListener('scroll', () => {
     const scrolled = (window.scrollY / windowHeight);
     scrollProgress.style.transform = `scaleX(${scrolled})`;
 });
-
-// ===== ENHANCED TYPING EFFECT =====
-// Already implemented, but let's make it more dynamic
-if (typingText) {
-    // Add blinking cursor effect
-    const cursorSpan = document.createElement('span');
-    cursorSpan.className = 'typing-cursor';
-    cursorSpan.textContent = '|';
-    cursorSpan.style.animation = 'blink 1s infinite';
-    typingText.appendChild(cursorSpan);
-}
-
-// Add blink animation to CSS dynamically
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes blink {
-        0%, 50% { opacity: 1; }
-        51%, 100% { opacity: 0; }
-    }
-    .typing-cursor {
-        color: var(--primary-color);
-        font-weight: 300;
-    }
-`;
-document.head.appendChild(style);
 
 // ===== SMOOTH REVEAL ON SCROLL =====
 const revealElements = document.querySelectorAll('.hero-badge, .hero-title, .hero-description, .hero-buttons, .hero-stats');
@@ -502,7 +391,7 @@ buttons.forEach(btn => {
     });
 });
 
-// ===== PARALLAX ON SCROLL FOR HERO IMAGE =====
+// ===== PARALLAX EFFECTS =====
 window.addEventListener('scroll', () => {
     const scrolled = window.pageYOffset;
     const heroImage = document.querySelector('.hero-img');
@@ -532,17 +421,80 @@ formInputs.forEach(input => {
     });
 });
 
-// ===== RANDOM FLOATING ANIMATION FOR CARDS =====
-const projectCards = document.querySelectorAll('.project-card');
-
-projectCards.forEach((card, index) => {
-    card.addEventListener('mouseenter', () => {
-        card.style.zIndex = '10';
-    });
-    
-    card.addEventListener('mouseleave', () => {
-        card.style.zIndex = '1';
+// ===== SMOOTH SCROLL =====
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        
+        if (target) {
+            const offsetTop = target.offsetTop - 80;
+            window.scrollTo({
+                top: offsetTop,
+                behavior: 'smooth'
+            });
+        }
     });
 });
+
+// ===== FLOATING CARDS MOUSE EFFECT =====
+const heroImageWrapper = document.querySelector('.hero-image-wrapper');
+const floatingCards = document.querySelectorAll('.floating-card');
+
+if (heroImageWrapper) {
+    heroImageWrapper.addEventListener('mousemove', (e) => {
+        const rect = heroImageWrapper.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        
+        floatingCards.forEach((card, index) => {
+            const speed = (index + 1) * 20;
+            card.style.transform = `translate(${x * speed}px, ${y * speed}px)`;
+        });
+    });
+    
+    heroImageWrapper.addEventListener('mouseleave', () => {
+        floatingCards.forEach(card => {
+            card.style.transform = 'translate(0, 0)';
+        });
+    });
+}
+
+// ===== SCROLL REVEAL ANIMATION =====
+const fadeElements = document.querySelectorAll('.skill-card, .project-card, .about-image, .about-text');
+
+fadeElements.forEach(el => {
+    el.classList.add('fade-in');
+});
+
+const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            revealObserver.unobserve(entry.target);
+        }
+    });
+}, {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+});
+
+fadeElements.forEach(el => {
+    revealObserver.observe(el);
+});
+
+// Add blink animation CSS
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes blink {
+        0%, 50% { opacity: 1; }
+        51%, 100% { opacity: 0; }
+    }
+    .typing-cursor {
+        color: var(--primary-color);
+        font-weight: 300;
+    }
+`;
+document.head.appendChild(style);
 
 console.log('🚀 Website loaded with superpowers!');
