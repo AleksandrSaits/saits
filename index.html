@@ -376,7 +376,50 @@
             </div>
         </div>
     </footer>
+        <!-- Modal Window -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <button class="modal-close" id="modalClose">&times;</button>
+            <div class="modal-header">
+                <i class="fas fa-paper-plane"></i>
+                <h2>Выберите способ связи</h2>
+                <p>Я свяжусь с вами в ближайшее время!</p>
+            </div>
+            <div class="modal-body">
+                <a href="#" class="contact-option telegram" id="telegramLink" target="_blank">
+                    <div class="contact-icon">
+                        <i class="fab fa-telegram-plane"></i>
+                    </div>
+                    <div class="contact-info">
+                        <h3>Telegram</h3>
+                        <p>@Lufiuz</p>
+                    </div>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+                <a href="#" class="contact-option gmail" id="gmailLink" target="_blank">
+                    <div class="contact-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="contact-info">
+                        <h3>Gmail</h3>
+                        <p>boombl4you@gmail.com</p>
+                    </div>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+            <div class="modal-footer">
+                <p><i class="fas fa-shield-alt"></i> Ваши данные защищены</p>
+            </div>
+        </div>
+    </div>
 
+    <!-- Custom Cursor -->
+    <div class="cursor" id="cursor"></div>
+    <div class="cursor-follower" id="cursorFollower"></div>
+
+    <!-- Particles Container -->
+    <div class="particles" id="particles"></div>
     <script src="script.js"></script>
 </body>
+
 </html>
