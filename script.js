@@ -291,4 +291,258 @@ if (heroImageWrapper) {
     });
 }
 
-console.log('🚀 Website loaded successfully!');
+// ===== MODAL WINDOW =====
+const modalOverlay = document.getElementById('modalOverlay');
+const modalClose = document.getElementById('modalClose');
+const telegramLink = document.getElementById('telegramLink');
+const gmailLink = document.getElementById('gmailLink');
+const contactForm = document.getElementById('contactForm');
+
+if (contactForm) {
+    contactForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const message = document.getElementById('message').value;
+        
+        // Show modal
+        modalOverlay.classList.add('active');
+        
+        // Generate Telegram message
+        const telegramText = `Привет! Меня зовут ${name}.%0A%0AМой email: ${email}%0A%0AСообщение:%0A${message}`;
+        telegramLink.href = `https://t.me/Lufiuz?text=${telegramText}`;
+        
+        // Generate Gmail message
+        const gmailSubject = `Новое сообщение от ${name}`;
+        const gmailBody = `Имя: ${name}%0D%0AEmail: ${email}%0D%0A%0D%0AСообщение:%0D%0A${message}`;
+        gmailLink.href = `https://mail.google.com/mail/?view=cm&fs=1&to=boombl4you@gmail.com&su=${encodeURIComponent(gmailSubject)}&body=${gmailBody}`;
+    });
+}
+
+if (modalClose) {
+    modalClose.addEventListener('click', () => {
+        modalOverlay.classList.remove('active');
+    });
+}
+
+if (modalOverlay) {
+    modalOverlay.addEventListener('click', (e) => {
+        if (e.target === modalOverlay) {
+            modalOverlay.classList.remove('active');
+        }
+    });
+}
+
+// Close modal on Escape key
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modalOverlay && modalOverlay.classList.contains('active')) {
+        modalOverlay.classList.remove('active');
+    }
+});
+
+// ===== CUSTOM CURSOR =====
+const cursor = document.getElementById('cursor');
+const cursorFollower = document.getElementById('cursorFollower');
+
+if (cursor && cursorFollower && window.innerWidth > 640) {
+    let mouseX = 0, mouseY = 0;
+    let cursorX = 0, cursorY = 0;
+    let followerX = 0, followerY = 0;
+
+    document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+    });
+
+    function animateCursor() {
+        // Smooth follow for cursor
+        cursorX += (mouseX - cursorX) * 0.2;
+        cursorY += (mouseY - cursorY) * 0.2;
+        
+        // Slower follow for follower
+        followerX += (mouseX - followerX) * 0.1;
+        followerY += (mouseY - followerY) * 0.1;
+        
+        cursor.style.left = cursorX + 'px';
+        cursor.style.top = cursorY + 'px';
+        cursorFollower.style.left = followerX + 'px';
+        cursorFollower.style.top = followerY + 'px';
+        
+        requestAnimationFrame(animateCursor);
+    }
+    
+    animateCursor();
+
+    // Hover effect on interactive elements
+    const interactiveElements = document.querySelectorAll('a, button, .project-card, .skill-card');
+    
+    interactiveElements.forEach(el => {
+        el.addEventListener('mouseenter', () => {
+            cursor.classList.add('hover');
+            cursorFollower.classList.add('hover');
+        });
+        
+        el.addEventListener('mouseleave', () => {
+            cursor.classList.remove('hover');
+            cursorFollower.classList.remove('hover');
+        });
+    });
+}
+
+// ===== PARTICLES =====
+const particlesContainer = document.getElementById('particles');
+
+if (particlesContainer) {
+    function createParticle() {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        
+        // Random position and size
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.width = Math.random() * 6 + 2 + 'px';
+        particle.style.height = particle.style.width;
+        
+        // Random animation duration and delay
+        particle.style.animationDuration = Math.random() * 10 + 10 + 's';
+        particle.style.animationDelay = Math.random() * 5 + 's';
+        
+        // Random color from gradient
+        const colors = ['#6366f1', '#8b5cf6', '#ec4899'];
+        particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+        
+        particlesContainer.appendChild(particle);
+        
+        // Remove particle after animation
+        setTimeout(() => {
+            particle.remove();
+        }, 20000);
+    }
+
+    // Create particles
+    setInterval(createParticle, 500);
+    
+    // Create initial particles
+    for (let i = 0; i < 20; i++) {
+        setTimeout(createParticle, i * 200);
+    }
+}
+
+// ===== SCROLL PROGRESS BAR =====
+const scrollProgress = document.createElement('div');
+scrollProgress.className = 'scroll-progress';
+document.body.appendChild(scrollProgress);
+
+window.addEventListener('scroll', () => {
+    const windowHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    const scrolled = (window.scrollY / windowHeight);
+    scrollProgress.style.transform = `scaleX(${scrolled})`;
+});
+
+// ===== ENHANCED TYPING EFFECT =====
+// Already implemented, but let's make it more dynamic
+if (typingText) {
+    // Add blinking cursor effect
+    const cursorSpan = document.createElement('span');
+    cursorSpan.className = 'typing-cursor';
+    cursorSpan.textContent = '|';
+    cursorSpan.style.animation = 'blink 1s infinite';
+    typingText.appendChild(cursorSpan);
+}
+
+// Add blink animation to CSS dynamically
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes blink {
+        0%, 50% { opacity: 1; }
+        51%, 100% { opacity: 0; }
+    }
+    .typing-cursor {
+        color: var(--primary-color);
+        font-weight: 300;
+    }
+`;
+document.head.appendChild(style);
+
+// ===== SMOOTH REVEAL ON SCROLL =====
+const revealElements = document.querySelectorAll('.hero-badge, .hero-title, .hero-description, .hero-buttons, .hero-stats');
+
+revealElements.forEach((el, index) => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(30px)';
+    el.style.transition = `all 0.6s ease ${index * 0.1}s`;
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                observer.unobserve(entry.target);
+            }
+        });
+    });
+    
+    observer.observe(el);
+});
+
+// ===== MAGNETIC BUTTONS =====
+const buttons = document.querySelectorAll('.btn');
+
+buttons.forEach(btn => {
+    btn.addEventListener('mousemove', (e) => {
+        const rect = btn.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+        
+        btn.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px)`;
+    });
+    
+    btn.addEventListener('mouseleave', () => {
+        btn.style.transform = 'translate(0, 0)';
+    });
+});
+
+// ===== PARALLAX ON SCROLL FOR HERO IMAGE =====
+window.addEventListener('scroll', () => {
+    const scrolled = window.pageYOffset;
+    const heroImage = document.querySelector('.hero-img');
+    const heroBg = document.querySelector('.hero-image-bg');
+    
+    if (heroImage && window.innerWidth > 968) {
+        heroImage.style.transform = `translateY(${scrolled * 0.3}px)`;
+    }
+    
+    if (heroBg && window.innerWidth > 968) {
+        heroBg.style.transform = `translateY(${scrolled * 0.5}px)`;
+    }
+});
+
+// ===== FORM INPUT ANIMATIONS =====
+const formInputs = document.querySelectorAll('.form-group input, .form-group textarea');
+
+formInputs.forEach(input => {
+    input.addEventListener('focus', () => {
+        input.parentElement.classList.add('focused');
+    });
+    
+    input.addEventListener('blur', () => {
+        if (!input.value) {
+            input.parentElement.classList.remove('focused');
+        }
+    });
+});
+
+// ===== RANDOM FLOATING ANIMATION FOR CARDS =====
+const projectCards = document.querySelectorAll('.project-card');
+
+projectCards.forEach((card, index) => {
+    card.addEventListener('mouseenter', () => {
+        card.style.zIndex = '10';
+    });
+    
+    card.addEventListener('mouseleave', () => {
+        card.style.zIndex = '1';
+    });
+});
+
+console.log('🚀 Website loaded with superpowers!');
