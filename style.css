@@ -64,8 +64,9 @@ body {
 .gradient-text {
     background: var(--gradient-primary);
     -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
     background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
 }
 
 /* ===== NAVIGATION ===== */
@@ -109,7 +110,9 @@ body {
 .logo-icon {
     background: var(--gradient-primary);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
+    color: transparent;
     font-size: 1.8rem;
 }
 
