@@ -156,12 +156,12 @@ if (contactForm) {
         const message = document.getElementById('message').value;
         if (modalOverlay) modalOverlay.classList.add('active');
         if (telegramLink) {
-            const telegramText = `Привет! Меня зовут ${name}.%0A%0AEmail: ${email}%0A%0AСообщение:%0A${message}`;
+            const telegramText = encodeURIComponent(`Привет! Меня зовут ${name}.\n\nEmail: ${email}\n\nСообщение:\n${message}`);
             telegramLink.href = `https://t.me/Lufiuz?text=${telegramText}`;
         }
         if (gmailLink) {
             const subject = encodeURIComponent(`Новое сообщение от ${name}`);
-            const body = `Имя: ${name}%0D%0AEmail: ${email}%0D%0A%0D%0A${message}`;
+            const body = encodeURIComponent(`Имя: ${name}\nEmail: ${email}\n\n${message}`);
             gmailLink.href = `https://mail.google.com/mail/?view=cm&fs=1&to=boombl4you@gmail.com&su=${subject}&body=${body}`;
         }
     });
@@ -217,19 +217,26 @@ window.addEventListener('scroll', () => {
     if (scrollProgress) scrollProgress.style.transform = `scaleX(${scrolled})`;
 });
 
-// ===== SMOOTH SCROLL - ИСПРАВЛЕНО =====
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function(e) {
-        e.preventDefault();
-        const href = this.getAttribute('href');
-        // Проверяем, что это действительно ID элемента, а не URL
-        if (href && href.startsWith('#') && href.length > 1) {
-            const target = document.querySelector(href);
-            if (target) {
-                window.scrollTo({ top: target.offsetTop - 80, behavior: 'smooth' });
-            }
-        }
-    });
+// ===== SMOOTH SCROLL - ИСПРАВЛЕНО ✅ =====
+document.addEventListener('click', function(e) {
+    const anchor = e.target.closest('a[href^="#"]');
+    if (!anchor) return;
+    
+    const href = anchor.getAttribute('href');
+    
+    // Пропускаем, если:
+    // 1. href пустой или только "#"
+    // 2. Это внешняя ссылка (содержит ://)
+    // 3. Это ссылка в модальном окне
+    if (!href || href === '#' || href.includes('://') || anchor.closest('.modal')) {
+        return;
+    }
+    
+    e.preventDefault();
+    const target = document.querySelector(href);
+    if (target) {
+        window.scrollTo({ top: target.offsetTop - 80, behavior: 'smooth' });
+    }
 });
 
 // ===== MAGNETIC BUTTONS =====
