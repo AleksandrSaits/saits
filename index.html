@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0f0f0f">
+    <title>ZERO-TUBE</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <div class="logo-area" onclick="routerNavigate('home')">
+                <span>ZERO-TUBE</span>
+            </div>
+        </div>
+        <div class="search-container">
+            <div class="search-input-wrapper">
+                <input type="text" id="searchInput" placeholder="Search" onkeypress="if(event.key==='Enter')handleSearch()">
+            </div>
+            <button class="search-btn touch-feedback" onclick="handleSearch()"><i class="fas fa-search"></i></button>
+        </div>
+        <div class="header-right">
+            <button class="icon-btn upload-btn touch-feedback" onclick="openUploadModal()"><i class="fas fa-video"></i></button>
+            <div id="authButtons">
+                <button class="create-btn touch-feedback" onclick="openAuthModal('login')">Sign In</button>
+            </div>
+            <div class="user-menu touch-feedback" id="userMenu" onclick="toggleUserDropdown()">
+                <img src="" class="user-avatar" id="navAvatar">
+                <i class="fas fa-chevron-down" style="font-size:0.75rem;"></i>
+                <div class="user-dropdown" id="userDropdown">
+                    <div class="dropdown-item" onclick="routerNavigate('history')"><i class="fas fa-history"></i> History</div>
+                    <div class="dropdown-divider"></div>
+                    <div class="dropdown-item danger" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Sign Out</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <nav class="bottom-nav" id="bottomNav">
+        <div class="bottom-nav-items">
+            <div class="bottom-nav-item active" onclick="routerNavigate('home')"><i class="fas fa-home"></i><span>Home</span></div>
+            <div class="bottom-nav-item" onclick="routerNavigate('trending')"><i class="fas fa-compass"></i><span>Explore</span></div>
+            <div class="bottom-nav-item" onclick="openUploadModal()"><i class="fas fa-plus-circle" style="font-size:1.6rem;"></i><span>Create</span></div>
+            <div class="bottom-nav-item" onclick="toggleUserDropdownMobile()"><i class="fas fa-user"></i><span>You</span></div>
+        </div>
+    </nav>
+
+    <main id="mainContent"></main>
+
+    <!-- Auth Modal -->
+    <div class="modal-overlay" id="authModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="authTitle">Sign In</h2>
+                <button class="modal-close touch-feedback" onclick="closeModal('authModal')">&times;</button>
+            </div>
+            <form id="authForm" onsubmit="handleAuth(event)">
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" id="authEmail" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input" id="authPassword" required minlength="6">
+                </div>
+                <div class="form-group" id="emailConfirmGroup" style="display:none;">
+                    <label class="form-label">Confirm Password</label>
+                    <input type="password" class="form-input" id="authPasswordConfirm" minlength="6">
+                </div>
+                <div id="authMessage" class="text-center mt-4"></div>
+                <button type="submit" class="create-btn" style="width:100%" id="authSubmitBtn">Submit</button>
+            </form>
+            <div class="text-center mt-4">
+                <span class="text-muted" id="authSwitchText">No account? <span class="text-accent" style="cursor:pointer" onclick="toggleAuthMode()">Sign Up</span></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Modal -->
+    <div class="modal-overlay" id="uploadModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Upload Video</h2>
+                <button class="modal-close touch-feedback" onclick="closeModal('uploadModal')">&times;</button>
+            </div>
+            
+            <div class="upload-type-selector mb-4">
+                <button class="upload-type-btn active" onclick="setUploadType('file')" id="uploadTypeFile">
+                    <i class="fas fa-upload"></i> File
+                </button>
+                <button class="upload-type-btn" onclick="setUploadType('url')" id="uploadTypeUrl">
+                    <i class="fas fa-link"></i> URL
+                </button>
+            </div>
+
+            <form id="uploadFormFile" class="upload-form" onsubmit="handleFileUpload(event)">
+                <div class="form-group">
+                    <label class="form-label">Video File</label>
+                    <div class="file-drop-zone" id="fileDropZone" onclick="document.getElementById('videoFile').click()">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Tap to select</p>
+                        <p class="text-muted" style="font-size:0.7rem">MP4, WebM</p>
+                        <input type="file" id="videoFile" accept="video/*" hidden onchange="handleFileSelect(this)">
+                    </div>
+                    <div id="filePreview" class="file-preview hidden"></div>
+                    <div class="upload-progress hidden" id="uploadProgress">
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill" id="progressBarFill"></div>
+                        </div>
+                        <span id="progressText">0%</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Title</label>
+                    <input type="text" class="form-input" id="vidTitle" required maxlength="100">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-input form-textarea" id="vidDesc" maxlength="5000"></textarea>
+                </div>
+                <button type="submit" class="create-btn" style="width:100%" id="uploadSubmitBtn">
+                    <i class="fas fa-upload"></i> Upload
+                </button>
+            </form>
+
+            <form id="uploadFormUrl" class="upload-form hidden" onsubmit="handleUrlUpload(event)">
+                <div class="form-group">
+                    <label class="form-label">Video URL</label>
+                    <input type="url" class="form-input" id="vidUrl" placeholder="https://example.com/video.mp4" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Title</label>
+                    <input type="text" class="form-input" id="vidTitleUrl" required maxlength="100">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-input form-textarea" 0id="vidDescUrl" maxlength="5000"></textarea>
+                </div>
+                <button type="submit" class="create-btn" style="width:100%">
+                    <i class="fas fa-link"></i> Add
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notifications Panel -->
+    <div class="notifications-panel" id="notificationsPanel">
+        <div class="notifications-header">
+            <h3>Notifications</h3>
+        </div>
+        <div class="notifications-list" id="notificationsList"></div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
